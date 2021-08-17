@@ -1,3 +1,4 @@
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/screen_util.dart';
 
@@ -20,10 +21,10 @@ class PosterDisplay extends StatelessWidget {
       tag: movieId,
       child: AspectRatio(
           aspectRatio: imgRatio,
-          child: Container(
+          child: url == null || url.isEmpty
+              ? Container(
             color: theme.primaryColor,
-            child: url == null || url.isEmpty
-                ? Center(
+                child: Center(
                     child: Material(
                       type: MaterialType.transparency,
                       child: Text(
@@ -34,15 +35,18 @@ class PosterDisplay extends StatelessWidget {
                         ),
                       ),
                     ),
-                  )
-                : Image.network(
-                    (isLarge ? posterUrlL : posterUrlM) + url,
-                    fit: BoxFit.contain,
-                    errorBuilder: (_, __, ___) => Container(
-                      color: theme.primaryColor,
-                    ),
                   ),
-          )),
+              )
+              : CachedNetworkImage(
+                  imageUrl: (isLarge ? posterUrlL : posterUrlM) + url,
+                  fit: BoxFit.contain,
+                  placeholder: (_, __) => Container(
+                    color: theme.primaryColor,
+                  ),
+                  errorWidget: (_, __, ___) => Container(
+                    color: theme.primaryColor,
+                  ),
+                )),
     );
   }
 }
