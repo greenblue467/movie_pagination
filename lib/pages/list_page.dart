@@ -3,7 +3,6 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:movie_list/data/constants.dart';
 import 'package:movie_list/main.dart';
-import 'package:movie_list/models/movie_model.dart';
 import 'package:movie_list/pages/detail_page.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:movie_list/pages/reusable_widgets/error_screen.dart';
@@ -21,7 +20,7 @@ class ListPage extends StatefulWidget {
 }
 
 class _ListPageState extends State<ListPage> {
-  ScrollController _scrollController = ScrollController();
+  final ScrollController _scrollController = ScrollController();
 
   @override
   void initState() {
@@ -80,10 +79,13 @@ class _ListPageState extends State<ListPage> {
         double extent,
         double distance,
         __,
-      ) =>
-          _customRefresher(
-              screenUtil, state, extent, distance, isFromEmptyList),
-      onRefresh: () => _refreshOrReload(isRefresh: true),
+      ) {
+        return _customRefresher(
+            screenUtil, state, extent, distance, isFromEmptyList);
+      },
+      onRefresh: () {
+        return _refreshOrReload(isRefresh: true);
+      },
     );
   }
 
@@ -94,23 +96,19 @@ class _ListPageState extends State<ListPage> {
       double refreshTriggerPullDistance,
       bool isFromEmptyList) {
     final double completionPercent = pulledExtent / refreshTriggerPullDistance;
-    return Container(
-      color: isFromEmptyList ? lightGrey : Colors.white,
-      child: Stack(
-        overflow: Overflow.visible,
-        children: [
-          Positioned(
-            top: screenUtil.setHeight(10.0),
-            left: 0.0,
-            right: 0.0,
-            child: _buildIndicatorForRefreshState(
+    return SingleChildScrollView(
+      child: Container(
+        color: isFromEmptyList ? lightGrey : Colors.white,
+        height: screenUtil.setHeight(100.0),
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            _buildIndicatorForRefreshState(
                 refreshState, screenUtil.setWidth(18.0), completionPercent),
-          ),
-          Positioned(
-            top: screenUtil.setHeight(25.0) + screenUtil.setWidth(36.0),
-            left: 0.0,
-            right: 0.0,
-            child: Opacity(
+            SizedBox(
+              height: screenUtil.setHeight(10.0),
+            ),
+            Opacity(
               opacity: 0.8 * completionPercent.clamp(0.0, 1.0),
               child: Text(
                 "Refreshing...",
@@ -119,9 +117,9 @@ class _ListPageState extends State<ListPage> {
                 ),
                 textAlign: TextAlign.center,
               ),
-            ),
-          )
-        ],
+            )
+          ],
+        ),
       ),
     );
   }
@@ -140,7 +138,7 @@ class _ListPageState extends State<ListPage> {
       case RefreshIndicatorMode.refresh:
         return CupertinoActivityIndicator(radius: radius);
       case RefreshIndicatorMode.done:
-        return CupertinoActivityIndicator(radius: radius * percentageComplete);
+        return CupertinoActivityIndicator(radius: radius);
       default:
         return Container();
     }
@@ -201,7 +199,8 @@ class _ListPageState extends State<ListPage> {
                   itemBuilder: (_, __) => ShimmerItem(),
                 ),
               );
-            } else if (movieInfoVm.requestPage != 0 && movieInfoVm.movies.isEmpty) {
+            } else if (movieInfoVm.requestPage != 0 &&
+                movieInfoVm.movies.isEmpty) {
               return CustomScrollView(
                 physics: BouncingScrollPhysics(
                     parent: AlwaysScrollableScrollPhysics()),
@@ -396,3 +395,4 @@ class _ListPageState extends State<ListPage> {
     );
   }
 }
+
