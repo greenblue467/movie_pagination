@@ -2,6 +2,7 @@ import 'dart:math';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/screen_util.dart';
 import 'package:movie_list/data/constants.dart';
+import 'package:movie_list/pages/reusable_widgets/custom_bar.dart';
 import 'package:movie_list/pages/reusable_widgets/custom_column.dart';
 import 'package:movie_list/pages/reusable_widgets/custom_proxy.dart';
 import 'package:movie_list/pages/reusable_widgets/custom_spacer.dart';
@@ -22,10 +23,7 @@ class _TryRenderObjectPageState extends State<TryRenderObjectPage>
   void initState() {
     super.initState();
     _animationController =
-        AnimationController(vsync: this, duration: Duration(seconds: 2))
-          ..addListener(() {
-            setState(() {});
-          });
+        AnimationController(vsync: this, duration: Duration(seconds: 2));
     _animationController.repeat();
   }
 
@@ -47,45 +45,57 @@ class _TryRenderObjectPageState extends State<TryRenderObjectPage>
           color: Colors.amber.withOpacity(0.3),
           child: Stack(
             children: [
-              CustomColumn(
-                align: CustomColumnAlign.center,
-                rotation: pi * _animationController.value,
-                children: [
-                  CustomSpacer(
-                    flex: 3,
-                    child: SizedBox(),
-                  ),
-                  GestureDetector(
-                    onTap: () {
-                      Navigator.pushNamed(context, TryRenderObjectPage.id);
-                    },
-                    child: Text(
-                      "Testing Title",
-                      style: TextStyle(
-                        fontSize: screenUtil.setWidth(30.0),
+              AnimatedBuilder(
+                animation: _animationController,
+                builder: (_, __) => CustomColumn(
+                  align: CustomColumnAlign.center,
+                  rotation: pi * _animationController.value,
+                  children: [
+                    CustomSpacer(
+                      flex: 3,
+                      child: SizedBox(),
+                    ),
+                    GestureDetector(
+                      onTap: () {
+                        Navigator.pushNamed(context, TryRenderObjectPage.id);
+                      },
+                      child: Text(
+                        "Testing Title",
+                        style: TextStyle(
+                          fontSize: screenUtil.setWidth(30.0),
+                        ),
                       ),
                     ),
-                  ),
-                  SizedBox(
-                    height: screenUtil.setHeight(10.0),
-                  ),
-                  Text(
-                    "Testing Body",
-                    style: TextStyle(
-                      fontSize: screenUtil.setWidth(20.0),
+                    SizedBox(
+                      height: screenUtil.setHeight(10.0),
                     ),
-                  ),
-                  CustomSpacer(
-                    flex: 4,
-                    child: SizedBox(),
-                  ),
-                ],
+                    Text(
+                      "Testing Body",
+                      style: TextStyle(
+                        fontSize: screenUtil.setWidth(20.0),
+                      ),
+                    ),
+                    CustomSpacer(
+                      flex: 4,
+                      child: SizedBox(),
+                    ),
+                  ],
+                ),
               ),
               CustomProxy(
                 child: Container(
                   color: Colors.red,
                   height: mediaQuery.size.height,
                   width: mediaQuery.size.width,
+                ),
+              ),
+              Positioned(
+                top: mediaQuery.size.height / 10,
+                left: 30.0,
+                right: 30.0,
+                child: CustomBar(
+                  thumbColor: Colors.white,
+                  dotColor: Colors.greenAccent,
                 ),
               ),
             ],
