@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:movie_list/main.dart';
+import 'package:movie_list/pages/try_render_object_page.dart';
 import 'package:movie_list/pages/reusable_widgets/poster_display.dart';
 import 'package:movie_list/pages/reusable_widgets/star_shape.dart';
 import 'package:movie_list/view_models/movie_Info_vm.dart';
@@ -184,13 +185,14 @@ class DetailPage extends StatelessWidget {
               ),
             ),
             Positioned(
-                top: 0.0,
-                left: 0.0,
-                right: 0.0,
-                child: Container(
-                  height: screenUtil.setHeight(75.0),
-                  color: Colors.black12,
-                ),),
+              top: 0.0,
+              left: 0.0,
+              right: 0.0,
+              child: Container(
+                height: screenUtil.setHeight(75.0),
+                color: Colors.black12,
+              ),
+            ),
             Positioned(
               right: screenUtil.setWidth(10.0),
               top: screenUtil.setHeight(35.0),
@@ -216,6 +218,19 @@ class DetailPage extends StatelessWidget {
               ),
             ),
           ],
+        ),
+        floatingActionButton: FloatingActionButton(
+          elevation: 3.0,
+          backgroundColor: Colors.teal,
+          child: Text(
+            "GO",
+            style: TextStyle(
+                fontSize: screenUtil.setWidth(20.0), color: Colors.white),
+          ),
+         onPressed: (){
+            Navigator.pushNamed(context, TryRenderObjectPage.id);
+         },
+
         ),
       ),
     );

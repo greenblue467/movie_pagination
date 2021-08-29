@@ -79,13 +79,10 @@ class _ListPageState extends State<ListPage> {
         double extent,
         double distance,
         __,
-      ) {
-        return _customRefresher(
-            screenUtil, state, extent, distance, isFromEmptyList);
-      },
-      onRefresh: () {
-        return _refreshOrReload(isRefresh: true);
-      },
+      ) =>
+          _customRefresher(
+              screenUtil, state, extent, distance, isFromEmptyList),
+      onRefresh: () => _refreshOrReload(isRefresh: true),
     );
   }
 
@@ -395,4 +392,3 @@ class _ListPageState extends State<ListPage> {
     );
   }
 }
-
