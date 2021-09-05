@@ -364,9 +364,10 @@ class RenderCustomSwitch extends RenderBox {
     final paintIcon = Paint()
       ..color = _currentColor
       ..style = PaintingStyle.stroke
-      ..strokeWidth = _strokeWidth * size.height / 60
+      ..strokeWidth = _strokeWidth * size.height / 60.0
       ..strokeCap = StrokeCap.round
       ..shader = _currentGradient;
+
     if (_currentGradient != null) {
       paint.color = Colors.white;
       paintIcon.color = Colors.white;
@@ -394,17 +395,28 @@ class RenderCustomSwitch extends RenderBox {
       ..addRect(rect); //middle part
     canvas.drawPath(pathBase, paint);
 
+    canvas.save();
+
     ///paint foreground
     double dxThumb = _getHorizontalPosition(size.width * _currentValue);
     double dxShadow = _getShadowHorizontal(size.width * _currentValue);
     double dxEnlarged = _getEnlargedThumb(size.width * _currentValue);
 
+    //rotating effect
+    canvas.translate(dxThumb, size.height / 2);
+    canvas.rotate(pi * _currentValue * 2);
+
+    //since center point is translated, the original center must subtract the translated value
     //shadow
-    canvas.drawCircle(Offset(dxShadow, size.height / 2 + 3.0),
-        size.height / _thumbRatio, paintShadow);
+    canvas.drawCircle(
+        Offset(dxShadow - dxThumb, size.height / 2 + 3.0 - size.height / 2),
+        size.height / _thumbRatio,
+        paintShadow);
     //thumb
-    canvas.drawCircle(Offset(dxThumb, size.height / 2),
-        size.height / _thumbRatio, paintThumb);
+    canvas.drawCircle(Offset(0.0, 0.0), size.height / _thumbRatio, paintThumb);
+
+    canvas.restore();
+
     //enlarged thumb
     canvas.drawOval(
         Rect.fromCircle(
@@ -413,10 +425,23 @@ class RenderCustomSwitch extends RenderBox {
         paintThumb);
 
     if (withIcon) {
+      canvas.translate(dxThumb, size.height / 2);
+      double rotateVal = _currentValue;
+
+      if (rotateVal == ((size.width - size.height * (1 / 2)) / size.width)) {
+        rotateVal = 1.0;
+      }
+      if (rotateVal == (size.height / (2 * size.width))) {
+        rotateVal = 0.0;
+      }
+      canvas.rotate(pi * rotateVal * 2 * (size.width ~/ size.height));
+
       ///paint icon
       //female
-      double dxFemale = dxThumb + dxThumb * (1 / 2.3) * (1 / 16);
-      double dyFemale = size.height / 2 - size.height * (1 / 2.3) * (1 / 16);
+      double dxFemale = dxThumb + dxThumb * (1 / 2.3) * (1 / 16) - dxThumb;
+      double dyFemale = size.height / 2 -
+          size.height * (1 / 2.3) * (1 / 16) -
+          size.height / 2;
       double radius = size.height / (_thumbRatio * 2);
       double dxFemaleLine = dxFemale - radius * (1 / sqrt(2));
       double dyFemaleLine = dyFemale + radius * (1 / sqrt(2));
@@ -430,17 +455,18 @@ class RenderCustomSwitch extends RenderBox {
         ..lineTo(dxFemaleLine2, dyFemaleLine2)
         ..moveTo(dxFemaleLine2, dyFemaleLine)
         ..lineTo(dxFemaleLine, dyFemaleLine2);
-      // canvas.drawPath(pathFemale, paintIcon);
 
       //male
-      double dxMale = dxThumb - size.height * (1 / 2.3) * (1 / 16);
-      double dyMale = size.height / 2 + size.height * (1 / 2.3) * (1 / 16);
+      double dxMale = dxThumb - size.height * (1 / 2.3) * (1 / 16) - dxThumb;
+      double dyMale = size.height / 2 +
+          size.height * (1 / 2.3) * (1 / 16) -
+          size.height / 2;
       double dxMaleLine = dxMale + radius * (1 / sqrt(2));
       double dyMaleLine = dyMale - radius * (1 / sqrt(2));
       double dxMaleLine2 = dxMale + radius * (1 / sqrt(2)) * (7 / 4);
       double dyMaleLine2 = dyMale - radius * (1 / sqrt(2)) * (7 / 4);
       double strokeWidthCorrection =
-          _strokeWidth * (size.height / 60) * (1 / 3);
+          _strokeWidth * (size.height / 60.0) * (1 / 3);
 
       final pathMale = Path()
         ..addOval(
@@ -454,6 +480,61 @@ class RenderCustomSwitch extends RenderBox {
 
       canvas.drawPath(_currentValue > 0.5 ? pathMale : pathFemale, paintIcon);
     }
+    // //shadow
+    // canvas.drawCircle(Offset(dxShadow, size.height / 2 + 3.0),
+    //     size.height / _thumbRatio, paintShadow);
+    // //thumb
+    // canvas.drawCircle(Offset(dxThumb, size.height / 2),
+    //     size.height / _thumbRatio, paintThumb);
+    // //enlarged thumb
+    // canvas.drawOval(
+    //     Rect.fromCircle(
+    //         center: Offset(dxEnlarged, size.height / 2),
+    //         radius: size.height / _thumbRatio),
+    //     paintThumb);
+    //
+    // if (withIcon) {
+    //   ///paint icon
+    //   //female
+    //   double dxFemale = dxThumb + dxThumb * (1 / 2.3) * (1 / 16);
+    //   double dyFemale = size.height / 2 - size.height * (1 / 2.3) * (1 / 16);
+    //   double radius = size.height / (_thumbRatio * 2);
+    //   double dxFemaleLine = dxFemale - radius * (1 / sqrt(2));
+    //   double dyFemaleLine = dyFemale + radius * (1 / sqrt(2));
+    //   double dxFemaleLine2 = dxFemale - radius * (1 / sqrt(2)) * (7 / 4);
+    //   double dyFemaleLine2 = dyFemale + radius * (1 / sqrt(2)) * (7 / 4);
+    //
+    //   final pathFemale = Path()
+    //     ..addOval(
+    //         Rect.fromCircle(center: Offset(dxFemale, dyFemale), radius: radius))
+    //     ..moveTo(dxFemaleLine, dyFemaleLine)
+    //     ..lineTo(dxFemaleLine2, dyFemaleLine2)
+    //     ..moveTo(dxFemaleLine2, dyFemaleLine)
+    //     ..lineTo(dxFemaleLine, dyFemaleLine2);
+    //   // canvas.drawPath(pathFemale, paintIcon);
+    //
+    //   //male
+    //   double dxMale = dxThumb - size.height * (1 / 2.3) * (1 / 16);
+    //   double dyMale = size.height / 2 + size.height * (1 / 2.3) * (1 / 16);
+    //   double dxMaleLine = dxMale + radius * (1 / sqrt(2));
+    //   double dyMaleLine = dyMale - radius * (1 / sqrt(2));
+    //   double dxMaleLine2 = dxMale + radius * (1 / sqrt(2)) * (7 / 4);
+    //   double dyMaleLine2 = dyMale - radius * (1 / sqrt(2)) * (7 / 4);
+    //   double strokeWidthCorrection =
+    //       _strokeWidth * (size.height / 60) * (1 / 3);
+    //
+    //   final pathMale = Path()
+    //     ..addOval(
+    //         Rect.fromCircle(center: Offset(dxMale, dyMale), radius: radius))
+    //     ..moveTo(dxMaleLine, dyMaleLine)
+    //     ..lineTo(dxMaleLine2, dyMaleLine2)
+    //     ..moveTo(dxMaleLine2 + strokeWidthCorrection, dyMaleLine2)
+    //     ..lineTo(dxMaleLine, dyMaleLine2)
+    //     ..moveTo(dxMaleLine2 + strokeWidthCorrection, dyMaleLine2)
+    //     ..lineTo(dxMaleLine2, dyMaleLine);
+    //
+    //   canvas.drawPath(_currentValue > 0.5 ? pathMale : pathFemale, paintIcon);
+    //}
   }
 
   @override
@@ -501,11 +582,11 @@ class RenderCustomSwitch extends RenderBox {
     if (_originalVal != null) {
       _setGradient(
         _originalVal < 0.5
-            ? Color.lerp(_activeGradient2, _activeGradient1, _currentValue)
-            : _activeGradient2,
+            ? Color.lerp(_inactiveGradient2, _activeGradient1, _currentValue)
+            : Color.lerp(_inactiveGradient2, _activeGradient1, _currentValue),
         _originalVal < 0.5
-            ? _inactiveGradient1
-            : Color.lerp(_inactiveGradient2, _inactiveGradient1, _currentValue),
+            ? Color.lerp(_activeGradient2, _inactiveGradient1, _currentValue)
+            : Color.lerp(_inactiveGradient1, _activeGradient2, _currentValue),
       );
     }
 

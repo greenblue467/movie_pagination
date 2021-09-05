@@ -118,7 +118,6 @@ class _TryRenderObjectPageState extends State<TryRenderObjectPage>
                     setState(() {
                       _val = val;
                     });
-                    //print(val);
                   },
                 ),
               ),
