@@ -114,7 +114,6 @@ class _TryRenderObjectPageState extends State<TryRenderObjectPage>
                 child: CustomSwitch(
                   thumbSize: screenUtil.setWidth(60.0),
                   value: _val,
-                  paintGradient: false,
                   onChange: (val) {
                     setState(() {
                       _val = val;
